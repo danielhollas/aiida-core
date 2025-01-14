@@ -76,7 +76,7 @@ def validate_list_of_string_tuples(val: Any, tuple_length: int) -> bool:
     return True
 
 
-def get_unique_filename(filename: str, list_of_filenames: list | tuple) -> str:
+def get_unique_filename(filename: str, list_of_filenames: 'list | tuple') -> str:
     """Return a unique filename that can be added to the list_of_filenames.
 
     If filename is not in list_of_filenames, it simply returns the filename
