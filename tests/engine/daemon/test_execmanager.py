@@ -20,6 +20,8 @@ from aiida.orm import CalcJobNode, FolderData, PortableCode, RemoteData, Singlef
 from aiida.plugins import entry_point
 from aiida.transports.plugins.local import LocalTransport
 
+pytestmark = pytest.mark.requires_ssh
+
 
 @pytest.fixture
 def file_hierarchy():

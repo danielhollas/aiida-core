@@ -1014,6 +1014,7 @@ def test_computer_test_use_login_shell(run_cli_command, aiida_localhost, monkeyp
 # It is important that 'ssh localhost' is functional in your test environment.
 # It should connect without asking for a password.
 @pytest.mark.parametrize('transport_type, config', [('core.ssh_async', ['--machine-or-host', 'localhost'])])
+@pytest.mark.requires_ssh
 def test_computer_setup_with_various_transport(run_cli_command, aiida_computer, transport_type, config):
     """Test setup of computer with ``core.ssh_async`` entry points.
 

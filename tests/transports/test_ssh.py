@@ -16,6 +16,8 @@ import pytest
 from aiida.transports.plugins.ssh import SshTransport
 from aiida.transports.transport import TransportInternalError
 
+pytestmark = pytest.mark.requires_ssh
+
 
 def test_closed_connection_ssh():
     """Test calling command on a closed connection."""

@@ -29,6 +29,7 @@ def test_aiida_localhost(aiida_localhost):
     ],
 )
 @pytest.mark.usefixtures('aiida_profile_clean')
+@pytest.mark.requires_ssh
 def test_aiida_computer_fixtures(fixture_name, transport_cls, transport_type, request):
     """Test the computer fixtures."""
     aiida_computer = request.getfixturevalue(fixture_name)

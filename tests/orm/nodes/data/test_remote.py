@@ -16,6 +16,8 @@ import pytest
 
 from aiida.orm import RemoteData
 
+pytestmark = pytest.mark.requires_ssh
+
 
 @pytest.fixture
 def remote_data_factory(tmp_path, aiida_computer_local, aiida_computer_ssh):

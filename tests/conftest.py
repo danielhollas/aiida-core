@@ -55,6 +55,7 @@ def pytest_collection_modifyitems(items, config):
     filepath_psqldos = Path(__file__).parent / 'storage' / 'psql_dos'
     filepath_django = Path(__file__).parent / 'storage' / 'psql_dos' / 'migrations' / 'django_branch'
     filepath_sqla = Path(__file__).parent / 'storage' / 'psql_dos' / 'migrations' / 'sqlalchemy_branch'
+    filepath_psqldos = Path(__file__).parent / 'storage' / 'psql_dos'
 
     # If the user requested the SQLite backend, automatically skip incompatible tests
     if config.option.db_backend is TestDbBackend.SQLITE:
@@ -75,13 +76,22 @@ def pytest_collection_modifyitems(items, config):
         if 'daemon_client' in item.fixturenames:
             item.add_marker('requires_rmq')
 
+        # Add 'requires_ssh' marker for all tests that depend on 'aiida_computer_ssh' fixture
+        if 'aiida_computer_ssh' in item.fixturenames or 'aiida_computer_ssh_async' in item.fixturenames:
+            item.add_marker('requires_ssh')
+
         # All tests in 'storage/psql_dos' require PostgreSQL
         if filepath_item.is_relative_to(filepath_psqldos):
             item.add_marker('requires_psql')
 
         # Add 'presto' marker to all tests that require neither PostgreSQL nor RabbitMQ services.
         markers = [marker.name for marker in item.iter_markers()]
-        if 'requires_rmq' not in markers and 'requires_psql' not in markers and 'nightly' not in markers:
+        if (
+            'requires_rmq' not in markers
+            and 'requires_psql' not in markers
+            and 'requires_ssh' not in markers
+            and 'nightly' not in markers
+        ):
             item.add_marker('presto')
 
 
