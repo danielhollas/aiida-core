@@ -103,7 +103,6 @@ repos:
         src/aiida/orm/computers.py|
         src/aiida/orm/implementation/storage_backend.py|
         src/aiida/orm/nodes/comments.py|
-        src/aiida/orm/nodes/data/array/bands.py|
         src/aiida/orm/nodes/data/array/trajectory.py|
         src/aiida/orm/nodes/data/cif.py|
         src/aiida/orm/nodes/data/remote/base.py|
