@@ -3,6 +3,10 @@ repos:
   rev: v5.0.0
   hooks:
   - id: check-merge-conflict
+    exclude: >-
+      (?x)^(
+        docs/source/.*|
+      )$
   - id: check-yaml
   - id: double-quote-string-fixer
   - id: end-of-file-fixer
