@@ -8,6 +8,8 @@
 ###########################################################################
 """Module for the ORM user class."""
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional, Tuple, Type
 
 from aiida.common import exceptions
@@ -62,9 +64,9 @@ class User(entities.Entity['BackendUser', UserCollection]):
     def __init__(
         self,
         email: str,
-        first_name: str = '',
-        last_name: str = '',
-        institution: str = '',
+        first_name: str | None = '',
+        last_name: str | None = '',
+        institution: str | None = '',
         backend: Optional['StorageBackend'] = None,
     ):
         """Create a new `User`."""

@@ -91,9 +91,6 @@ repos:
         src/aiida/engine/processes/calcjobs/tasks.py|
         src/aiida/engine/processes/control.py|
         src/aiida/engine/processes/ports.py|
-        src/aiida/manage/configuration/__init__.py|
-        src/aiida/manage/configuration/config.py|
-        src/aiida/manage/external/rmq/launcher.py|
         src/aiida/orm/nodes/data/array/trajectory.py|
         src/aiida/orm/nodes/data/cif.py|
         src/aiida/orm/nodes/data/remote/base.py|

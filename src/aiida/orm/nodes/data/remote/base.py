@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
-from typing import Union
+from typing import Literal, Union, overload
 
 from aiida.common.pydantic import MetadataField
 from aiida.orm import AuthInfo
@@ -198,12 +198,28 @@ class RemoteData(Data):
     def get_authinfo(self):
         return AuthInfo.get_collection(self.backend).get(dbcomputer=self.computer, aiidauser=self.user)
 
+    @overload
     def get_size_on_disk(
         self,
         relpath: Path | None = None,
-        method: str = 'du',
+        method: Literal['du', 'stat'] = 'du',
+        return_bytes: Literal[False] = False,
+    ) -> tuple[str, str]: ...
+
+    @overload
+    def get_size_on_disk(
+        self,
+        relpath: Path | None = None,
+        method: Literal['du', 'stat'] = 'du',
+        return_bytes: Literal[True] = True,
+    ) -> tuple[int, str]: ...
+
+    def get_size_on_disk(
+        self,
+        relpath: Path | None = None,
+        method: Literal['du', 'stat'] = 'du',
         return_bytes: bool = False,
-    ) -> int | str:
+    ) -> tuple[int | str, str]:
         """Connects to the remote Computer of the `RemoteData` object and returns the total size of a file or a
         directory at the given `relpath` in a human-readable format.
 
@@ -220,7 +236,11 @@ class RemoteData(Data):
 
         from aiida.common.utils import format_directory_size
 
-        total_size: int = -1
+        if method not in ('du', 'stat'):
+            exc_message = f'Specified method `{method}` is not an valid input. Please choose either `du` or `stat`.'
+            raise ValueError(exc_message)
+
+        total_size = -1
 
         if relpath is None:
             relpath = Path('.')
@@ -234,19 +254,9 @@ class RemoteData(Data):
                 exc_message = f'The required remote path {full_path} on Computer <{computer_label}> does not exist.'
                 raise FileNotFoundError(exc_message)
 
-            if method not in ('du', 'stat'):
-                exc_message = f'Specified method `{method}` is not an valid input. Please choose either `du` or `stat`.'
-                raise ValueError(exc_message)
-
             if method == 'du':
                 try:
-                    total_size: int = self._get_size_on_disk_du(full_path, transport)
-                    _logger.report('Obtained size on the remote using `du`.')
-                    if return_bytes:
-                        return total_size, method
-                    else:
-                        return format_directory_size(size_in_bytes=total_size), method
-
+                    total_size = self._get_size_on_disk_du(full_path, transport)
                 except (RuntimeError, NotImplementedError):
                     # NotImplementedError captures the fact that, e.g., FirecREST does not allow for `exec_command_wait`
                     stat_warn = (
@@ -254,10 +264,22 @@ class RemoteData(Data):
                     )
 
                     _logger.warning(stat_warn)
+                else:
+                    _logger.report('Obtained size on the remote using `du`.')
+                    if return_bytes:
+                        return total_size, method
+                    else:
+                        return format_directory_size(size_in_bytes=total_size), method
 
             if method == 'stat' or total_size < 0:
                 try:
-                    total_size: int = self._get_size_on_disk_stat(full_path, transport)
+                    total_size = self._get_size_on_disk_stat(full_path, transport)
+                # This should typically not even be reached, as the OSError occours if the path is not a directory or
+                # does not exist. Though, we check for its existence already in the beginning of this method.
+                except OSError:
+                    _logger.critical('Could not evaluate directory size using either `du` or `stat`.')
+                    raise
+                else:
                     _logger.report('Obtained size on the remote using `stat`.')
                     _logger.warning(
                         'Take the result with a grain of salt, as `stat` returns the apparent size of files, '
@@ -267,12 +289,6 @@ class RemoteData(Data):
                         return total_size, 'stat'
                     else:
                         return format_directory_size(size_in_bytes=total_size), 'stat'
-
-                # This should typically not even be reached, as the OSError occours if the path is not a directory or
-                # does not exist. Though, we check for its existence already in the beginning of this method.
-                except OSError:
-                    _logger.critical('Could not evaluate directory size using either `du` or `stat`.')
-                    raise
 
     def _get_size_on_disk_du(self, full_path: Path, transport: Transport) -> int:
         """Returns the total size of a file/directory at the given ``full_path`` on the remote Computer in bytes using

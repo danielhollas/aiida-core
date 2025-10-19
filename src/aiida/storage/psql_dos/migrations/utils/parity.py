@@ -8,12 +8,10 @@
 ###########################################################################
 """Utilities for synchronizing the django and sqlalchemy schema."""
 
-import alembic
-
 from aiida.storage.psql_dos.migrations.utils import ReflectMigrations
 
 
-def synchronize_schemas(alembic_op: alembic.op) -> None:
+def synchronize_schemas(alembic_op) -> None:
     """This function is used by the final migration step, of django/sqlalchemy branches, to synchronize their schemas.
 
     1. Remove and recreate all (non-unique) indexes, with standard names and postgresql ops.

@@ -63,6 +63,6 @@ class SqlaUserCollection(BackendUserCollection):
 
     ENTITY_CLASS = SqlaUser
 
-    def create(self, email, first_name='', last_name='', institution=''):
+    def create(self, email: str, first_name: str = '', last_name: str = '', institution: str = ''):
         """Create a user with the provided email address"""
         return self.ENTITY_CLASS(self.backend, email, first_name, last_name, institution)

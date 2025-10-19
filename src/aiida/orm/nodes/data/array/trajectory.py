@@ -851,7 +851,7 @@ def plot_positions_XYZ(  # noqa: N802
     plt.xlabel(f'Time [{times_unit}]')
     plt.xlim(*tlim)
     n_labels = np.minimum(n_labels, len(times))  # don't need more labels than times
-    sparse_indices = np.linspace(*index_range, num=n_labels, dtype=int)
+    sparse_indices = np.linspace(index_range[0], index_range[1], num=n_labels, dtype=int)
 
     for index, traj in enumerate(trajectories):
         if index not in indices_to_show:

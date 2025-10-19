@@ -10,7 +10,8 @@
 
 from __future__ import annotations
 
-import alembic
+from typing import Collection
+
 from sqlalchemy import inspect
 
 
@@ -28,7 +29,7 @@ class ReflectMigrations:
     to know what to drop.
     """
 
-    def __init__(self, op: alembic.op) -> None:
+    def __init__(self, op) -> None:
         self.op = op
         # note, we only want to instatiate the inspector once, since it caches reflection calls to the database
         self.inspector = inspect(op.get_bind())
@@ -55,7 +56,7 @@ class ReflectMigrations:
             if index['unique'] is unique:
                 self.op.drop_index(index['name'], table_name)
 
-    def drop_indexes(self, table_name: str, column: str | list[str], unique: bool = False) -> None:
+    def drop_indexes(self, table_name: str, column: str | Collection[str], unique: bool = False) -> None:
         """Drop all indexes set for this column name group."""
         if isinstance(column, str):
             column = [column]
@@ -69,7 +70,9 @@ class ReflectMigrations:
         for constraint in self.inspector.get_foreign_keys(table_name):
             self.op.drop_constraint(constraint['name'], table_name, type_='foreignkey')
 
-    def drop_foreign_keys(self, table_name: str, columns: list[str], ref_tbl: str, ref_columns: list[str]) -> None:
+    def drop_foreign_keys(
+        self, table_name: str, columns: Collection[str], ref_tbl: str, ref_columns: Collection[str]
+    ) -> None:
         """Drop all foreign keys set for this column name group and referring column set."""
         column_set = set(columns)
         ref_column_set = set(ref_columns)

@@ -11,13 +11,15 @@
 
 from __future__ import annotations
 
+from typing import Generator
+
 # AUTO-GENERATED
 # fmt: off
 from .migrations import *
 from .options import *
 from .profile import *
 
-__all__ = (
+__all__: tuple[str, ...] = (
     'CURRENT_CONFIG_VERSION',
     'MIGRATIONS',
     'OLDEST_COMPATIBLE_CONFIG_VERSION',
@@ -176,7 +178,7 @@ def get_profile() -> Optional['Profile']:
 
 
 @contextmanager
-def profile_context(profile: 'Profile' | str | None = None, allow_switch=False) -> 'Profile':
+def profile_context(profile: 'Profile' | str | None = None, allow_switch=False) -> Generator[Profile]:
     """Return a context manager for temporarily loading a profile, and unloading on exit.
 
     :param profile: the name of the profile to load, by default will use the one marked as default in the config
@@ -201,7 +203,7 @@ def create_default_user(
     first_name: Optional[str] = None,
     last_name: Optional[str] = None,
     institution: Optional[str] = None,
-) -> User:
+) -> User | None:
     """Create a default user for the given profile.
 
     If the profile's storage is read only, a random existing user will be queried and set as default. Otherwise a new

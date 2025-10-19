@@ -12,6 +12,7 @@ Despite the import of the annotations backport below which enables postponed typ
 with PEP 563 (https://peps.python.org/pep-0563/), this is not compatible with ``pydantic`` for Python 3.9 and older (
 See https://github.com/pydantic/pydantic/issues/2678 for details).
 """
+# mypy: disable-error-code="assignment"
 
 from __future__ import annotations
 
@@ -190,7 +191,7 @@ class ProfileSchema(BaseModel, defer_build=True):
     options: Optional[ProfileOptionsSchema] = None
 
     @field_serializer('uuid')
-    def serialize_dt(self, value: uuid.UUID, _info):
+    def serialize_dt(self, value: uuid.UUID, _info):  # type: ignore[name-defined]
         return str(value)
 
 
