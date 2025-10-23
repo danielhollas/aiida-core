@@ -544,6 +544,9 @@ class SshTransport(BlockingTransport):
         """
         from aiida.common.exceptions import InvalidOperation
 
+        if not self._sftp:
+            raise InvalidOperation('Cannot close the transport: it has not been opened yet')
+
         if not self._is_open:
             raise InvalidOperation('Cannot close the transport: it is already closed')
 

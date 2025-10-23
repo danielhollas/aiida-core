@@ -254,7 +254,7 @@ class _AsyncSSH(_AsynchronousSSHBackend):
         except asyncssh.Error as exc:
             raise OSError from exc
 
-    async def run(self, command: str, stdin: Optional[str] = None, timeout: Optional[int] = None):
+    async def run(self, command: str, stdin: Optional[str] = None, timeout: Optional[float] = None):
         result = await self._conn.run(
             self.bash_command + escape_for_bash(command),
             input=stdin,
