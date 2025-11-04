@@ -762,7 +762,8 @@ class Config:
             json.dump(self.dictionary, codecs.getwriter('utf-8')(handle), indent=DEFAULT_CONFIG_INDENT_SIZE)
             handle.seek(0)
 
-            if md5_from_filelike(handle) != md5_file(self.filepath):
+            # DH TODO: Remove type-ignore
+            if md5_from_filelike(handle) != md5_file(self.filepath):  # type: ignore[arg-type]
                 self._backup(self.filepath)
 
         self._atomic_write()
