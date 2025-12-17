@@ -15,6 +15,7 @@ import re
 import string
 import time
 import typing as t
+from collections.abc import Collection
 
 from typing_extensions import override
 
@@ -190,7 +191,7 @@ class SlurmScheduler(BashCliScheduler):
         # 14.03.7 and later
     ]
 
-    def _get_joblist_command(self, jobs: list[str] | None = None, user: str | None = None) -> str:
+    def _get_joblist_command(self, jobs: Collection[str] | None = None, user: str | None = None) -> str:
         """The command to report full information on existing jobs.
 
         Separate the fields with the _field_separator string order:
@@ -213,13 +214,10 @@ class SlurmScheduler(BashCliScheduler):
             command.append(f'-u{user}')
 
         if jobs:
-            if isinstance(jobs, str):  # type: ignore[unreachable]
-                joblist = [jobs]  # type: ignore[unreachable]
-                joblist.append(jobs)
+            if isinstance(jobs, str):
+                joblist = [jobs]
             else:
-                if not isinstance(jobs, (tuple, list)):
-                    raise TypeError("If provided, the 'jobs' variable must be a string or a list of strings")
-                joblist = jobs
+                joblist = list(jobs)
 
             # Trick: When asking for a single job, append the same job once more.
             # This helps provide a reliable way of knowing whether the squeue command failed (if its exit code is

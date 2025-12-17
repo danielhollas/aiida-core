@@ -16,6 +16,7 @@ import re
 import string
 import time
 import typing as t
+from collections.abc import Collection
 
 from aiida.common import AttributeDict, FeatureNotAvailable
 from aiida.common.escaping import escape_for_bash
@@ -150,7 +151,7 @@ class PbsBaseClass(BashCliScheduler):
         """
         raise NotImplementedError('Implement the _get_resource_lines in each subclass!')
 
-    def _get_joblist_command(self, jobs: list[str] | None = None, user: str | None = None) -> str:
+    def _get_joblist_command(self, jobs: Collection[str] | None = None, user: str | None = None) -> str:
         """The command to report full information on existing jobs.
 
         TODO: in the case of job arrays, decide what to do (i.e., if we want
@@ -166,8 +167,8 @@ class PbsBaseClass(BashCliScheduler):
             command.append(f'-u{user}')
 
         if jobs:
-            if isinstance(jobs, str):  # type: ignore[unreachable]
-                command.append(f'{escape_for_bash(jobs)}')  # type: ignore[unreachable]
+            if isinstance(jobs, str):
+                command.append(f'{escape_for_bash(jobs)}')
             else:
                 try:
                     command.append(f"{' '.join(escape_for_bash(j) for j in jobs)}")

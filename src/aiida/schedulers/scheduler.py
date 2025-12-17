@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import abc
 import typing as t
+from collections.abc import Collection
 
 from aiida.common import exceptions, log, warnings
 from aiida.common.datastructures import CodeRunMode
@@ -137,7 +138,7 @@ class Scheduler(metaclass=abc.ABCMeta):
     @t.overload
     def get_jobs(
         self,
-        jobs: list[str] | None = None,
+        jobs: Collection[str] | None = None,
         user: str | None = None,
         as_dict: t.Literal[False] = False,
     ) -> list[JobInfo]: ...
@@ -145,7 +146,7 @@ class Scheduler(metaclass=abc.ABCMeta):
     @t.overload
     def get_jobs(
         self,
-        jobs: list[str] | None = None,
+        jobs: Collection[str] | None = None,
         user: str | None = None,
         as_dict: t.Literal[True] = True,
     ) -> dict[str, JobInfo]: ...
@@ -153,7 +154,7 @@ class Scheduler(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_jobs(
         self,
-        jobs: list[str] | None = None,
+        jobs: Collection[str] | None = None,
         user: str | None = None,
         as_dict: bool = False,
     ) -> list[JobInfo] | dict[str, JobInfo]:

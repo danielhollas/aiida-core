@@ -20,6 +20,7 @@ import time
 import typing as t
 import xml.dom.minidom
 import xml.parsers.expat
+from collections.abc import Collection
 
 import aiida.schedulers
 from aiida.common.escaping import escape_for_bash
@@ -112,7 +113,7 @@ class SgeScheduler(BashCliScheduler):
     # The class to be used for the job resource.
     _job_resource_class = SgeJobResource
 
-    def _get_joblist_command(self, jobs: list[str] | None = None, user: str | None = None) -> str:
+    def _get_joblist_command(self, jobs: Collection[str] | None = None, user: str | None = None) -> str:
         """The command to report full information on existing jobs.
 
         TODO: in the case of job arrays, decide what to do (i.e., if we want

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import abc
 import typing as t
+from collections.abc import Collection
 
 from aiida.common.escaping import escape_for_bash
 from aiida.engine.processes.exit_code import ExitCode
@@ -38,7 +39,7 @@ class BashCliScheduler(Scheduler, metaclass=abc.ABCMeta):
     @t.overload
     def get_jobs(
         self,
-        jobs: list[str] | None = None,
+        jobs: Collection[str] | None = None,
         user: str | None = None,
         as_dict: t.Literal[False] = False,
     ) -> list[JobInfo]: ...
@@ -46,14 +47,14 @@ class BashCliScheduler(Scheduler, metaclass=abc.ABCMeta):
     @t.overload
     def get_jobs(
         self,
-        jobs: list[str] | None = None,
+        jobs: Collection[str] | None = None,
         user: str | None = None,
         as_dict: t.Literal[True] = True,
     ) -> dict[str, JobInfo]: ...
 
     def get_jobs(
         self,
-        jobs: list[str] | None = None,
+        jobs: Collection[str] | None = None,
         user: str | None = None,
         as_dict: bool = False,
     ) -> list[JobInfo] | dict[str, JobInfo]:
@@ -110,7 +111,7 @@ class BashCliScheduler(Scheduler, metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def _get_joblist_command(self, jobs: list[str] | None = None, user: str | None = None) -> str:
+    def _get_joblist_command(self, jobs: Collection[str] | None = None, user: str | None = None) -> str:
         """Return the command to get the most complete description possible of currently active jobs.
 
         .. note::

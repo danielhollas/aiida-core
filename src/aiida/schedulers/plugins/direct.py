@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import re
 import typing as t
+from collections.abc import Collection
 
 from typing_extensions import override
 
@@ -98,7 +99,7 @@ class DirectScheduler(BashCliScheduler):
     # The class to be used for the job resource.
     _job_resource_class = DirectJobResource
 
-    def _get_joblist_command(self, jobs: list[str] | None = None, user: str | None = None) -> str:
+    def _get_joblist_command(self, jobs: Collection[str] | None = None, user: str | None = None) -> str:
         """The command to report full information on existing jobs.
 
         TODO: in the case of job arrays, decide what to do (i.e., if we want
@@ -111,13 +112,13 @@ class DirectScheduler(BashCliScheduler):
         command = 'ps -xo pid,stat,user,time'
 
         if jobs:
-            if isinstance(jobs, str):  # type: ignore[unreachable]
-                command += f' {escape_for_bash(jobs)}'  # type: ignore[unreachable]
+            if isinstance(jobs, str):
+                command += f' {escape_for_bash(jobs)}'
             else:
                 try:
                     command += f" {' '.join(escape_for_bash(job) for job in jobs if job)}"
                 except TypeError:
-                    raise TypeError("If provided, the 'jobs' variable must be a string or a list of strings")
+                    raise TypeError("If provided, the 'jobs' variable must be a string or a Collection of strings")
 
         command += '| tail -n +2'  # -header, do not use 'h'
 
@@ -272,7 +273,7 @@ class DirectScheduler(BashCliScheduler):
     @t.overload
     def get_jobs(
         self,
-        jobs: list[str] | None = None,
+        jobs: Collection[str] | None = None,
         user: str | None = None,
         as_dict: t.Literal[False] = False,
     ) -> list[JobInfo]: ...
@@ -280,7 +281,7 @@ class DirectScheduler(BashCliScheduler):
     @t.overload
     def get_jobs(
         self,
-        jobs: list[str] | None = None,
+        jobs: Collection[str] | None = None,
         user: str | None = None,
         as_dict: t.Literal[True] = True,
     ) -> dict[str, JobInfo]: ...
@@ -288,7 +289,7 @@ class DirectScheduler(BashCliScheduler):
     @override
     def get_jobs(
         self,
-        jobs: list[str] | None = None,
+        jobs: Collection[str] | None = None,
         user: str | None = None,
         as_dict: bool = False,
     ) -> list[JobInfo] | dict[str, JobInfo]:

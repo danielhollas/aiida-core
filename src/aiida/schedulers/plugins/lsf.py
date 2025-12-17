@@ -14,6 +14,7 @@ import datetime
 import re
 import string
 import typing as t
+from collections.abc import Collection
 
 import aiida.schedulers
 from aiida.common.escaping import escape_for_bash
@@ -265,7 +266,7 @@ class LsfScheduler(BashCliScheduler):
         'name',  # job name
     ]
 
-    def _get_joblist_command(self, jobs: list[str] | None = None, user: str | None = None) -> str:
+    def _get_joblist_command(self, jobs: Collection[str] | None = None, user: str | None = None) -> str:
         """The command to report full information on existing jobs.
 
         Separates the fields with the _field_separator string order:
@@ -283,13 +284,10 @@ class LsfScheduler(BashCliScheduler):
             command.append(f'-u{user}')
 
         if jobs:
-            if isinstance(jobs, str):  # type: ignore[unreachable]
-                joblist = [jobs]  # type: ignore[unreachable]
+            if isinstance(jobs, str):
+                command.append(jobs)
             else:
-                if not isinstance(jobs, (tuple, list)):
-                    raise TypeError("If provided, the 'jobs' variable must be a string or a list of strings")
-                joblist = jobs
-            command.append(' '.join(joblist))
+                command.append(' '.join(jobs))
 
         comm = ' '.join(command)
         self.logger.debug(f'bjobs command: {comm}')
