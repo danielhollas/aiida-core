@@ -102,8 +102,6 @@ repos:
         src/aiida/orm/nodes/data/remote/base.py|
         src/aiida/orm/nodes/data/structure.py|
         src/aiida/orm/nodes/data/upf.py|
-        src/aiida/orm/nodes/process/calculation/calcjob.py|
-        src/aiida/orm/nodes/process/process.py|
         src/aiida/orm/utils/builders/code.py|
         src/aiida/orm/utils/builders/computer.py|
         src/aiida/orm/utils/calcjob.py|

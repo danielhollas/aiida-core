@@ -9,7 +9,7 @@
 """Module with `Node` sub class for calculation job processes."""
 
 import datetime
-from typing import TYPE_CHECKING, Any, AnyStr, Dict, List, Optional, Sequence, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Tuple, Type, Union, cast
 
 from aiida.common import exceptions
 from aiida.common.datastructures import CalcJobState
@@ -34,7 +34,7 @@ __all__ = ('CalcJobNode',)
 class CalcJobNodeCaching(ProcessNodeCaching):
     """Interface to control caching of a node instance."""
 
-    def get_objects_to_hash(self) -> List[Any]:
+    def get_objects_to_hash(self) -> dict[str, Any]:
         """Return a list of objects which should be included in the hash.
 
         This method is purposefully overridden from the base `Node` class, because we do not want to include the
@@ -66,40 +66,43 @@ class CalcJobNode(CalculationNode):
 
     class Model(CalculationNode.Model):
         scheduler_state: Optional[str] = MetadataField(
-            description='The state of the scheduler', orm_to_model=lambda node, _: node.get_scheduler_state()
+            description='The state of the scheduler',
+            orm_to_model=lambda node, _: cast('CalcJobNode', node).get_scheduler_state(),
         )
         state: Optional[str] = MetadataField(
-            description='The active state of the calculation job', orm_to_model=lambda node, _: node.get_state()
+            description='The active state of the calculation job',
+            orm_to_model=lambda node, _: cast('CalcJobNode', node).get_state(),
         )
         remote_workdir: Optional[str] = MetadataField(
             description='The path to the remote (on cluster) scratch folder',
-            orm_to_model=lambda node, _: node.get_remote_workdir(),
+            orm_to_model=lambda node, _: cast('CalcJobNode', node).get_remote_workdir(),
         )
         job_id: Optional[str] = MetadataField(
-            description='The scheduler job id', orm_to_model=lambda node, _: node.get_job_id()
+            description='The scheduler job id', orm_to_model=lambda node, _: cast('CalcJobNode', node).get_job_id()
         )
         scheduler_lastchecktime: Optional[datetime.datetime] = MetadataField(
             description='The last time the scheduler was checked, in isoformat',
-            orm_to_model=lambda node, _: node.get_scheduler_lastchecktime(),
+            orm_to_model=lambda node, _: cast('CalcJobNode', node).get_scheduler_lastchecktime(),
         )
         last_job_info: Optional[dict] = MetadataField(
             description='The last job info returned by the scheduler',
-            orm_to_model=lambda node, _: dict(node.get_last_job_info() or {}),
+            orm_to_model=lambda node, _: dict(cast('CalcJobNode', node).get_last_job_info() or {}),
         )
         detailed_job_info: Optional[dict] = MetadataField(
             description='The detailed job info returned by the scheduler',
-            orm_to_model=lambda node, _: node.get_detailed_job_info(),
+            orm_to_model=lambda node, _: cast('CalcJobNode', node).get_detailed_job_info(),
         )
         retrieve_list: Optional[List[str]] = MetadataField(
             description='The list of files to retrieve from the remote cluster',
-            orm_to_model=lambda node, _: node.get_retrieve_list(),
+            orm_to_model=lambda node, _: cast('CalcJobNode', node).get_retrieve_list(),
         )
         retrieve_temporary_list: Optional[List[str]] = MetadataField(
             description='The list of temporary files to retrieve from the remote cluster',
-            orm_to_model=lambda node, _: node.get_retrieve_temporary_list(),
+            orm_to_model=lambda node, _: cast('CalcJobNode', node).get_retrieve_temporary_list(),
         )
         imported: Optional[bool] = MetadataField(
-            description='Whether the node has been migrated', orm_to_model=lambda node, _: node.is_imported
+            description='Whether the node has been migrated',
+            orm_to_model=lambda node, _: cast('CalcJobNode', node).is_imported,
         )
 
     # An optional entry point for a CalculationTools instance
@@ -122,14 +125,20 @@ class CalcJobNode(CalculationNode):
         if self._tools is None:
             entry_point_string = self.process_type
 
-            if entry_point_string and is_valid_entry_point_string(entry_point_string):
+            # This is the fallback
+            self._tools = CalculationTools(self)
+
+            if not entry_point_string:
+                self.logger.warning(f'Calculation tools entry point not defined for class {self}')
+            elif not is_valid_entry_point_string(entry_point_string):
+                self.logger.warning(f'Calculation tools entry point string {entry_point_string} not valid')
+            else:
                 entry_point = get_entry_point_from_string(entry_point_string)
 
                 try:
                     tools_class = load_entry_point('aiida.tools.calculations', entry_point.name)
                     self._tools = tools_class(self)
                 except exceptions.EntryPointError as exception:
-                    self._tools = CalculationTools(self)
                     self.logger.warning(
                         f'could not load the calculation tools entry point {entry_point.name}: {exception}'
                     )
@@ -475,7 +484,7 @@ class CalcJobNode(CalculationNode):
 
         try:
             return (
-                self.base.links.get_outgoing(node_class=FolderData, link_label_filter=self.link_label_retrieved)
+                self.base.links.get_outgoing(node_class=FolderData, link_label_filter=self.link_label_retrieved)  # type: ignore[return-value]
                 .one()
                 .node
             )
@@ -496,7 +505,7 @@ class CalcJobNode(CalculationNode):
 
         return CalcJobResultManager(self)
 
-    def get_scheduler_stdout(self) -> Optional[AnyStr]:
+    def get_scheduler_stdout(self) -> str | None:
         """Return the scheduler stderr output if the calculation has finished and been retrieved, None otherwise.
 
         :return: scheduler stderr output or None
@@ -508,13 +517,13 @@ class CalcJobNode(CalculationNode):
             return None
 
         try:
-            stdout = retrieved_node.base.repository.get_object_content(filename)
+            stdout = retrieved_node.base.repository.get_object_content(cast(str, filename))
         except OSError:
             stdout = None
 
         return stdout
 
-    def get_scheduler_stderr(self) -> Optional[AnyStr]:
+    def get_scheduler_stderr(self) -> str | None:
         """Return the scheduler stdout output if the calculation has finished and been retrieved, None otherwise.
 
         :return: scheduler stdout output or None
@@ -526,7 +535,7 @@ class CalcJobNode(CalculationNode):
             return None
 
         try:
-            stderr = retrieved_node.base.repository.get_object_content(filename)
+            stderr = retrieved_node.base.repository.get_object_content(cast(str, filename))
         except OSError:
             stderr = None
 

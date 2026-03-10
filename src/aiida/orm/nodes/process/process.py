@@ -21,7 +21,8 @@ from aiida.common.pydantic import MetadataField
 from aiida.orm.utils.mixins import Sealable
 
 from ..caching import NodeCaching
-from ..node import Node, NodeLinks
+from ..links import NodeLinks
+from ..node import Node
 
 if TYPE_CHECKING:
     from aiida.engine.processes import ExitCode, Process
@@ -80,9 +81,9 @@ class ProcessNodeCaching(NodeCaching):
 
         :param valid: whether the node is valid or invalid for use in caching.
         """
-        super(ProcessNodeCaching, self.__class__).is_valid_cache.fset(self, valid)
+        super(ProcessNodeCaching, self.__class__).is_valid_cache.fset(self, valid)  # type: ignore[attr-defined]
 
-    def get_objects_to_hash(self) -> List[Any]:
+    def get_objects_to_hash(self) -> dict[str, Any]:
         """Return a list of objects which should be included in the hash."""
         res = super().get_objects_to_hash()
         res.update(
@@ -577,7 +578,7 @@ class ProcessNode(Sealable, Node):
 
         :returns: list of process nodes called by this process
         """
-        return self.base.links.get_outgoing(link_type=(LinkType.CALL_CALC, LinkType.CALL_WORK)).all_nodes()
+        return self.base.links.get_outgoing(link_type=(LinkType.CALL_CALC, LinkType.CALL_WORK)).all_nodes()  # type: ignore[return-value]
 
     @property
     def called_descendants(self) -> List['ProcessNode']:
@@ -603,7 +604,7 @@ class ProcessNode(Sealable, Node):
             caller = self.base.links.get_incoming(link_type=(LinkType.CALL_CALC, LinkType.CALL_WORK)).one().node
         except ValueError:
             return None
-        return caller
+        return caller  # type: ignore[return-value]
 
     def dump(
         self,
