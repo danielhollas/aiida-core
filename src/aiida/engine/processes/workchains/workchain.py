@@ -411,7 +411,7 @@ class WorkChain(Process, metaclass=Protect):
         if awaitable.outputs:
             value = {entry.link_label: entry.node for entry in node.base.links.get_outgoing()}
         else:
-            value = node  # type: ignore[assignment]
+            value = node
 
         self._resolve_awaitable(awaitable, value)
 

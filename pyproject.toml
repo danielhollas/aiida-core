@@ -241,7 +241,7 @@ notebook = [
 # https://github.com/python/typeshed?tab=readme-ov-file#package-versioning-for-third-party-stubs
 pre-commit = [
   'aiida-core[tests]',
-  'mypy~=1.19.0',
+  'mypy~=1.20.0',
   'packaging~=23.0',
   'pre-commit~=3.5',
   'sqlalchemy[mypy]~=2.0',
@@ -321,17 +321,19 @@ exclude = [
 ]
 
 [tool.mypy]
+allow_redefinition_new = true
+# these options reduce the strictness and should eventually be removed
 disallow_any_generics = false
 disallow_incomplete_defs = false
 disallow_subclassing_any = false
 disallow_untyped_calls = false
-# these options reduce the strictness and should eventually be removed
 disallow_untyped_defs = false
 enable_error_code = [
   'ignore-without-code',
   'redundant-expr',
   'truthy-bool'
 ]
+local_partial_types = true
 plugins = [
   'pydantic.mypy',
   'sqlalchemy.ext.mypy.plugin'

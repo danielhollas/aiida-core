@@ -987,7 +987,7 @@ class Process(PlumpyProcess):
                 for part in sub_namespace.split('.'):
                     inputs = inputs[part]
                 try:
-                    port_namespace = self.spec().inputs.get_port(sub_namespace)  # type: ignore[assignment]
+                    port_namespace = self.spec().inputs.get_port(sub_namespace)
                 except KeyError:
                     raise ValueError(f'this process does not contain the "{sub_namespace}" input namespace')
 

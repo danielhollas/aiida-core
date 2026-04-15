@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 __all__ = ('AiiDAPersister', 'ObjectLoader', 'get_object_loader')
 
 LOGGER = logging.getLogger(__name__)
-OBJECT_LOADER = None
+OBJECT_LOADER: 'ObjectLoader | None' = None
 
 
 class ObjectLoader(plumpy.loaders.DefaultObjectLoader):

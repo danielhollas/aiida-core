@@ -848,7 +848,7 @@ class QueryBuilder:
             return projection.backend_key
 
         if not isinstance(projection_spec, (list, tuple)):
-            projection_spec = [projection_spec]  # type: ignore[list-item]
+            projection_spec = [projection_spec]
         for projection in projection_spec:
             if isinstance(projection, dict):
                 _thisprojection = {
@@ -1216,12 +1216,12 @@ def _get_ormclass(
         func = _get_ormclass_from_cls
         input_info = cls
     elif entity_type is not None:
-        func = _get_ormclass_from_str  # type: ignore[assignment]
-        input_info = entity_type  # type: ignore[assignment]
+        func = _get_ormclass_from_str
+        input_info = entity_type
     else:
         raise ValueError('Neither cls nor entity_type specified')
 
-    if isinstance(input_info, str) or not isinstance(input_info, Sequence):  # type: ignore[redundant-expr]
+    if isinstance(input_info, str) or not isinstance(input_info, Sequence):
         input_info = (input_info,)
 
     ormclass = EntityTypes.NODE

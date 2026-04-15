@@ -481,7 +481,7 @@ class PsqlDosBackend(StorageBackend):
         if full:
             maintenance_context = ProfileAccessManager(self._profile).lock
         else:
-            maintenance_context = nullcontext  # type: ignore[assignment]
+            maintenance_context = nullcontext
 
         with maintenance_context():
             unreferenced_objects = self.get_unreferenced_keyset()

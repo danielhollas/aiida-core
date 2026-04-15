@@ -546,6 +546,7 @@ def computer_test(user, print_traceback, computer):
     if user is None:
         user = orm.User.collection.get_default()
 
+    assert user is not None
     echo.echo_report(f'Testing computer<{computer.label}> for user<{user.email}>...')
 
     try:

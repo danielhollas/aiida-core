@@ -151,14 +151,14 @@ class JobsList:
             raise
         else:
             for job_id in self._polling_jobs:
-                future = self._job_update_requests.pop(job_id, None)  # type: ignore[arg-type]
+                future = self._job_update_requests.pop(job_id, None)
                 if future is None:
                     # This should not happen after fixing the mutation bug
                     # where schedulers could modify _polling_jobs (#7155, now
                     # immutable frozenset). If this warning fires, there may be
                     # a race condition or other issue where job_id was removed
                     # from _job_update_requests.
-                    self.logger.warning(  # type: ignore[unreachable]
+                    self.logger.warning(
                         f'This should not happen: polled job_id {job_id} '
                         f'not in _job_update_requests {self._job_update_requests}'
                     )

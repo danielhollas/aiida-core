@@ -577,7 +577,7 @@ class _OpenSSH(_AsynchronousSSHBackend):
 
     async def chmod(self, path: str, mode: int, follow_symlinks: bool = True):
         # chmod works with octal numbers, so we have to convert the mode to octal
-        mode = oct(mode)[2:]  # type: ignore[assignment]
+        mode = oct(mode)[2:]
         commands = self.ssh_command_generator(f"chmod {'-h' if not follow_symlinks else ''} {mode} {{}}", paths=[path])
         returncode, stdout, stderr = await self.openssh_execute(commands)
 

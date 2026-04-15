@@ -285,7 +285,7 @@ def echo_node_dict(nodes: list[Node], keys: list, fmt: str, identifier: str, raw
             id_value = node.pk
         else:
             id_name = 'UUID'
-            id_value = node.uuid  # type: ignore[assignment]
+            id_value = node.uuid
 
         if use_attrs:
             node_dict = node.base.attributes.all
@@ -509,7 +509,7 @@ def rehash(nodes, entry_point, force):
     else:
         builder = QueryBuilder()
         builder.append(classes, tag='node')
-        to_hash = builder.iterall()  # type: ignore[assignment]
+        to_hash = builder.iterall()
         num_nodes = builder.count()
 
     if not num_nodes:

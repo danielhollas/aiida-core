@@ -327,7 +327,7 @@ class Group(entities.Entity['BackendGroup', GroupCollection]):
 
         # Cannot use `collections.Iterable` here, because that would also match iterable `Node` sub classes like `List`
         if not isinstance(nodes, (list, tuple)):
-            nodes = [nodes]  # type: ignore[list-item]
+            nodes = [nodes]
 
         for node in nodes:
             type_check(node, Node)
@@ -348,7 +348,7 @@ class Group(entities.Entity['BackendGroup', GroupCollection]):
 
         # Cannot use `collections.Iterable` here, because that would also match iterable `Node` sub classes like `List`
         if not isinstance(nodes, (list, tuple)):
-            nodes = [nodes]  # type: ignore[list-item]
+            nodes = [nodes]
 
         for node in nodes:
             type_check(node, Node)

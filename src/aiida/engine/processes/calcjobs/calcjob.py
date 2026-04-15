@@ -917,7 +917,7 @@ class CalcJob(Process):
                 break
 
         if exit_code is not None and not isinstance(exit_code, ExitCode):
-            args = (parser_class.__name__, type(exit_code))  # type: ignore[unreachable]
+            args = (parser_class.__name__, type(exit_code))
             raise ValueError('`{}.parse` returned neither an `ExitCode` nor None, but: {}'.format(*args))
 
         return exit_code
